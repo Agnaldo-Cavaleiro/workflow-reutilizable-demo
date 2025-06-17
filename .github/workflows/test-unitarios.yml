@@ -14,12 +14,22 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'javascript' ]
     outputs:
       test-status: ${{ steps.set-output.outputs.test-status }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+      
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -33,6 +43,9 @@ jobs:
         id: run-tests
         run: npm test || true # Continue even if tests fail to set output
         continue-on-error: true
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
       - name: Set test status
         id: set-output
