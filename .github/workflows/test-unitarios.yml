@@ -10,6 +10,9 @@ on:
       test-status:
         description: 'Status of the test job'
         value: ${{ jobs.test.outputs.test-status }}
+permissions:  
+  contents: read
+  security-events: write
 
 jobs:
   test:
