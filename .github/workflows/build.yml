@@ -32,7 +32,7 @@ jobs:
 
       - name: Build project
         id: run-build
-        run: npm run build || true # Placeholder; continues if no build script
+        run: npm run build || true 
         continue-on-error: true
 
       - name: Set build status
