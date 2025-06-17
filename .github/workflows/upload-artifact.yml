@@ -7,12 +7,12 @@ on:
         description: 'Name of the artifact to upload'
         required: false
         type: string
-        default: 'node-app-artifacts'
+        default: 'dist'
       artifact-path:
         description: 'Path to the files to upload as artifacts'
         required: false
         type: string
-        default: '.'
+        default: 'dist'
     outputs:
       artifact-status:
         description: 'Status of the artifact upload job'
