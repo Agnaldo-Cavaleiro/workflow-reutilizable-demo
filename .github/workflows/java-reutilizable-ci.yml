@@ -76,10 +76,7 @@ jobs:
           echo "JAR file found: $JAR_FILE"
           cp "$JAR_FILE" packagejar/
         continue-on-error: false
-      # - name: Copy Package Directory sta 
-      #   run: mkdir packagejar && cp target/*jar-with-dependencies.jar packagejar
-      #   continue-on-error: false
-
+     
       - name: Upload artifacts
         id: upload
         uses: actions/upload-artifact@v4
