@@ -20,19 +20,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    # strategy:
-    #   fail-fast: false
-    #   matrix:
-    #     language: [ 'java' ]
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [ 'java' ]
  
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # - name: Initialize CodeQL
-      #   uses: github/codeql-action/init@v3
-      #   with:
-      #     languages: ${{ matrix.language }}
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
       
       - name: Set up Java JDK
         uses: actions/setup-java@v3
@@ -51,8 +51,8 @@ jobs:
       - name: Build and test project with Maven
         run: mvn -B package --file pom.xml
 
-      # - name: Perform CodeQL Analysis
-      #   uses: github/codeql-action/analyze@v3
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
   build-upload:
     runs-on: ubuntu-latest
