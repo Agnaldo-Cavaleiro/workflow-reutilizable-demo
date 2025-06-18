@@ -32,7 +32,7 @@ jobs:
       - name: Set up Java JDK
         uses: actions/setup-java@v3
         with:
-          node-version: ${{ inputs.java-version }}
+          java-version: ${{ inputs.java-version }}
           cache: 'maven'
 
       - name: Cache Maven packages
@@ -58,7 +58,7 @@ jobs:
       - name: Set up Java JDK
         uses: actions/setup-java@v3
         with:
-          node-version: ${{ inputs.java-version }}
+          java-version: ${{ inputs.java-version }}
           cache: 'maven'
 
       - name: Create Package JAR
