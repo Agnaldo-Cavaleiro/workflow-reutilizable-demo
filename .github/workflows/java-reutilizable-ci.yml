@@ -11,6 +11,10 @@ on:
         required: false
         type: string
         default: 'Package'
+      distribution:
+        description: 'type distribution Java'
+        required: true
+        type: string
      
 jobs:
   test:
@@ -33,6 +37,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
           cache: 'maven'
 
       - name: Cache Maven packages
