@@ -39,8 +39,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
-          cache: 'maven'
-
+    
       - name: Cache Maven packages
         uses: actions/cache@v3
         with:
@@ -66,8 +65,7 @@ jobs:
         with:
           java-version: ${{ inputs.java-version }}
           distribution: ${{ inputs.distribution }}
-          cache: 'maven'
-
+         
       - name: Create Package JAR
         run: mvn -B package --file pom.xml -DskipTests
 
@@ -82,4 +80,3 @@ jobs:
           name: ${{ inputs.artifact-name }}
           path: packagejar
           retention-days: 7
-        
