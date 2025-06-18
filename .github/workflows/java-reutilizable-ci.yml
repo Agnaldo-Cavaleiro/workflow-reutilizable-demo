@@ -65,6 +65,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
           cache: 'maven'
 
       - name: Create Package JAR
