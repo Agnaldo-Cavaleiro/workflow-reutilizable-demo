@@ -15,7 +15,7 @@ on:
         description: 'type distribution Java'
         required: true
         type: string
-        default: 'temurin'
+        
      
 jobs:
   test:
