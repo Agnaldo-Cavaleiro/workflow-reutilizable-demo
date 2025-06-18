@@ -69,10 +69,17 @@ jobs:
          
       - name: Create Package JAR
         run: mvn -B package --file pom.xml -DskipTests
-
-      - name: Copy Package Directory sta 
-        run: mkdir packagejar && cp target/*jar-with-dependencies.jar packagejar
+       
+      - name: Copy Package JAR to directory
+        run: |
+          mkdir packagejar
+          JAR_FILE=$(find target -maxdepth 1 -name "*.jar"  | head -n 1)
+          echo "JAR file found: $JAR_FILE"
+          cp "$JAR_FILE" packagejar/
         continue-on-error: false
+      # - name: Copy Package Directory sta 
+      #   run: mkdir packagejar && cp target/*jar-with-dependencies.jar packagejar
+      #   continue-on-error: false
 
       - name: Upload artifacts
         id: upload
