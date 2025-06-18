@@ -56,7 +56,7 @@ jobs:
 
   build-upload-artifact:
     runs-on: ubuntu-latest
-    needs: test
+    needs: unit-test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
