@@ -10,7 +10,6 @@ on:
         description: 'Name of the artifact to upload'
         required: false
         type: string
-        default: 'Package'
       distribution:
         description: 'type distribution Java'
         required: true
@@ -33,13 +32,9 @@ jobs:
         uses: github/codeql-action/init@v3
         with:
           languages: ${{ matrix.language }}
-      
-      - name: Set up Java JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: ${{ inputs.java-version }}
-          distribution: ${{ inputs.distribution }}
           
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v3
 
       - name: Cache Maven packages
         uses: actions/cache@v3
@@ -48,11 +43,14 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2  
 
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.distribution }}
+
       - name: Build and test project with Maven
         run: mvn -B package --file pom.xml
-
-      - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
 
   build-upload-artifact:
     runs-on: ubuntu-latest
