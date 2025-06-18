@@ -1,29 +1,24 @@
-name: Reusable Node.js
+name: Reusable java
 on:
   workflow_call:
     inputs:
-      node-version:
-        description: 'Node.js version to use'
+      java-version:
+        description: 'Java version to use'
         required: true
         type: string
       artifact-name:
         description: 'Name of the artifact to upload'
         required: false
         type: string
-        default: 'dist'
-      artifact-path:
-        description: 'Path to the files to upload as artifacts'
-        required: false
-        type: string
-        default: '.'
-  
+        default: 'Package'
+     
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'javascript' ]
+        language: [ 'java' ]
  
     steps:
       - name: Checkout repository
@@ -34,19 +29,21 @@ jobs:
         with:
           languages: ${{ matrix.language }}
       
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
         with:
-          node-version: ${{ inputs.node-version }}
-          cache: 'npm'
+          node-version: ${{ inputs.java-version }}
+          cache: 'maven'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2  
 
-      - name: Run tests
-        id: run-tests
-        run: npm test || true 
-        continue-on-error: false
+      - name: Build and test project with Maven
+        run: mvn -B package --file pom.xml
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v3
@@ -58,20 +55,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Set up Java JDK
+        uses: actions/setup-java@v3
         with:
-          node-version: ${{ inputs.node-version }}
-          cache: 'npm'
+          node-version: ${{ inputs.java-version }}
+          cache: 'maven'
 
-      - name: Install dependencies
-        run: npm ci
+      - name: Create Package JAR
+        run: mvn -B package --file pom.xml -DskipTests
 
-      - name: Build project
-        id: run-build
-        run: npm run build || true 
-        continue-on-error: true
-
+      - name: Copy Package Directory sta 
+        run: mkdir packagejar && cp target/*jar-with-dependencies.jar packagejar
+        continue-on-error: false
+      
   upload-artifact:
     runs-on: ubuntu-latest
     needs: build
@@ -84,7 +80,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.artifact-name }}
-          path: ${{ inputs.artifact-path }}
+          path: packagejar
           retention-days: 7
-
-   
