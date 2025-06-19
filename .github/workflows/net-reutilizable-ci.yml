@@ -1,9 +1,9 @@
-name: Reusable java
+name: Reusable NET
 on:
   workflow_call:
     inputs:
       java-version:
-        description: 'Java version to use'
+        description: 'Net version to use'
         required: true
         type: string
       artifact-name:
