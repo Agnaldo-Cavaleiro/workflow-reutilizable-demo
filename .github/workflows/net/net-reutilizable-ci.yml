@@ -1,0 +1,80 @@
+name: Reusable .NET CI Workflow
+
+on:
+  workflow_call:
+    inputs:
+      dotnet-version:
+        description: 'Versión de .NET a usar (por ejemplo, 6.0, 4.8)'
+        required: true
+        type: string
+      project-type:
+        description: 'Tipo de proyecto: "netcore" o "netframework"'
+        required: true
+        type: string
+      artifact-name:
+        description: 'Nombre del artefacto para subir'
+        required: false
+        type: string
+        default: 'Package'
+
+jobs:
+  build-test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ inputs.dotnet-version }}
+
+      - name: Restore dependencias
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: dotnet restore
+
+      - name: Clean solución
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: dotnet clean
+
+      - name: Build proyecto .NET Core
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: dotnet build --configuration Release --no-restore
+
+      - name: Test proyecto .NET Core
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: dotnet test --no-build --verbosity normal
+
+      - name: Build proyecto .NET Framework
+        if: ${{ inputs.project-type == 'netframework' }}
+        run: |
+          nuget restore YourSolution.sln
+          msbuild YourSolution.sln /p:Configuration=Release
+
+      - name: Test proyecto .NET Framework
+        if: ${{ inputs.project-type == 'netframework' }}
+        run: |
+          vstest.console.exe path\to\YourTestProject\bin\Release\YourTestProject.dll
+
+      - name: Empaquetar artefactos
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: dotnet publish -c Release -o ./publish
+
+      - name: Preparar artefactos para upload .NET Core
+        if: ${{ inputs.project-type == 'netcore' }}
+        run: mkdir package && cp -r publish/* package/
+
+      - name: Preparar artefactos para upload .NET Framework
+        if: ${{ inputs.project-type == 'netframework' }}
+        run: mkdir package && cp path\to\build\output\* package/
+
+  upload-artifact:
+    runs-on: windows-latest
+    needs: build-test
+    steps:
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.artifact-name }}
+          path: package
+          retention-days: 7
